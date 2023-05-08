@@ -1,6 +1,6 @@
-# <div align="center">‼️ This repository is deprecated ‼️</div>
+# Bug fixes for Safe Desktop App
 
-<div align="center"> Please use <a href="https://github.com/safe-global/web-core">safe-global/web-core</a> instead </div>
+**As the original repository is deprecated by the Safe team and there is no alternative desktop client provided so far, this fork addresses some bugs found during the usage of Safe Desktop App.**
 
 ---
 
