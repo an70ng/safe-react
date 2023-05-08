@@ -1,5 +1,10 @@
-import { WalletInitOptions, WalletModule, WalletSelectModuleOptions } from 'bnc-onboard/dist/src/interfaces'
-
+import {
+  GenesisBlock,
+  WalletInitOptions,
+  WalletModule,
+  WalletSelectModuleOptions,
+} from 'bnc-onboard/dist/src/interfaces'
+import { Hardfork } from '@ethereumjs/common'
 import { getRpcServiceUrl, getDisabledWallets, getChainById } from 'src/config'
 import { ChainId, CHAIN_ID, WALLETS } from 'src/config/chain.d'
 import { FORTMATIC_KEY, PORTIS_ID, WC_BRIDGE } from 'src/utils/constants'
@@ -17,6 +22,15 @@ const wallets = (chainId: ChainId): Wallet[] => {
   // Ensure RPC matches chainId drilled from Onboard init
   const { rpcUri } = getChainById(chainId)
   const rpcUrl = getRpcServiceUrl(rpcUri)
+  // Custrom network configuration for hardware wallets
+  // with dummy genesis block and hardforks just to satisfy `bnc-onboard` lib
+  // and allow it to handle non-default chains
+  const custmoNetwork = {
+    networkId: parseInt(chainId, 10),
+    genesis: {} as any as GenesisBlock,
+    hardforks: [{ name: Hardfork.Berlin, block: 0, forkHash: '0x00' }],
+    bootstrapNodes: [],
+  }
 
   return [
     { walletName: WALLETS.METAMASK, preferred: true, desktop: false },
@@ -40,6 +54,7 @@ const wallets = (chainId: ChainId): Wallet[] => {
       email: 'support@safe.global',
       desktop: true,
       rpcUrl,
+      customNetwork: custmoNetwork,
     },
     {
       walletName: WALLETS.LEDGER,
@@ -47,12 +62,14 @@ const wallets = (chainId: ChainId): Wallet[] => {
       preferred: true,
       rpcUrl,
       LedgerTransport: (window as any).TransportNodeHid,
+      customNetwork: custmoNetwork,
     },
     {
       walletName: WALLETS.KEYSTONE,
       desktop: false,
       rpcUrl,
       appName: 'Safe',
+      customNetwork: custmoNetwork,
     },
     { walletName: WALLETS.TRUST, preferred: true, desktop: false },
     {
